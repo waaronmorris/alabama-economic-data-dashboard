@@ -1,0 +1,23 @@
+{
+  "title": "FRED Economic Dashboard",
+  "description": "Real-time economic indicators from Federal Reserve Economic Data",
+  "favicon": "./static/favicon.png",
+  "theme": "dashboard",
+  "header": {
+    "title": "FRED Dashboard",
+    "logo": "./static/logo.svg"
+  },
+  "footer": {
+    "copyright": "Data provided by Federal Reserve Economic Data (FRED)",
+    "links": [
+      {
+        "text": "FRED",
+        "href": "https://fred.stlouisfed.org/"
+      },
+      {
+        "text": "API Documentation",
+        "href": "https://fred.stlouisfed.org/docs/api/fred/"
+      }
+    ]
+  }
+} 

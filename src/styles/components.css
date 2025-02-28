@@ -1,0 +1,53 @@
+.series-search {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.series-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.series-observations {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.series-header {
+  margin-bottom: 20px;
+}
+
+.observations-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.observations-list th,
+.observations-list td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.observations-list th {
+  background-color: #f5f5f5;
+}
+
+.error {
+  color: red;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid red;
+  border-radius: 4px;
+}
