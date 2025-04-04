@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "economic_growth",
+      "title": "Economic Growth",
+      "description": "Measures of economic output and growth",
+      "indicators": ["GDPC1", "GDPPOT"]
+    },
+    {
+      "id": "employment",
+      "title": "Employment",
+      "description": "Labor market indicators",
+      "indicators": ["UNRATE", "PAYEMS"]
+    },
+    {
+      "id": "inflation",
+      "title": "Inflation",
+      "description": "Price level changes and inflation measures",
+      "indicators": ["CPIAUCSL", "PCEPI"]
+    },
+    {
+      "id": "housing",
+      "title": "Housing",
+      "description": "Housing market indicators",
+      "indicators": ["MSPUS", "MEHOINUSA672N"]
+    },
+    {
+      "id": "financial",
+      "title": "Financial Markets",
+      "description": "Financial market indicators",
+      "indicators": ["FEDFUNDS", "T10YFF"]
+    }
+  ]
+}
