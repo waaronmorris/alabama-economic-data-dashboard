@@ -37,15 +37,15 @@ A typical Framework project looks like this:
 └─ README.md
 ```
 
-**`src`** - This is the “source root” — where your source files live. Pages go here. Each page is a Markdown file. Observable Framework uses [file-based routing](https://observablehq.com/framework/project-structure#routing), which means that the name of the file controls where the page is served. You can create as many pages as you like. Use folders to organize your pages.
+**`src`** - This is the "source root" — where your source files live. Pages go here. Each page is a Markdown file. Observable Framework uses [file-based routing](https://observablehq.com/framework/project-structure#routing), which means that the name of the file controls where the page is served. You can create as many pages as you like. Use folders to organize your pages.
 
-**`src/index.md`** - This is the home page for your app. You can have as many additional pages as you’d like, but you should always have a home page, too.
+**`src/index.md`** - This is the home page for your app. You can have as many additional pages as you'd like, but you should always have a home page, too.
 
 **`src/data`** - You can put [data loaders](https://observablehq.com/framework/data-loaders) or static data files anywhere in your source root, but we recommend putting them here.
 
 **`src/components`** - You can put shared [JavaScript modules](https://observablehq.com/framework/imports) anywhere in your source root, but we recommend putting them here. This helps you pull code out of Markdown files and into JavaScript modules, making it easier to reuse code across pages, write tests and run linters, and even share code with vanilla web applications.
 
-**`observablehq.config.js`** - This is the [app configuration](https://observablehq.com/framework/config) file, such as the pages and sections in the sidebar navigation, and the app’s title.
+**`observablehq.config.js`** - This is the [app configuration](https://observablehq.com/framework/config) file, such as the pages and sections in the sidebar navigation, and the app's title.
 
 ## Command reference
 
@@ -57,3 +57,33 @@ A typical Framework project looks like this:
 | `npm run deploy`     | Deploy your app to Observable                            |
 | `npm run clean`      | Clear the local data loader cache                        |
 | `npm run observable` | Run commands like `observable help`                      |
+
+## Deployment
+
+This project is deployed using GitHub Pages. The site is automatically built and deployed whenever changes are pushed to the main branch.
+
+### Accessing the Site
+
+The live site is available at: [https://waaronmorris.github.io/economic-data-dashboard/](https://waaronmorris.github.io/economic-data-dashboard/)
+
+### Local Development
+
+To run the project locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Deployment Process
+
+The deployment is handled automatically through GitHub Actions. When changes are pushed to the main branch:
+
+1. The project is built using `npm run build`
+2. The built files are deployed to GitHub Pages
+3. The site is updated at the URL above
+
+No manual deployment steps are required.
