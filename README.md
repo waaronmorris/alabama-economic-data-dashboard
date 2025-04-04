@@ -1,5 +1,11 @@
 # Economic Data Dashboard
 
+## Accessing the Site
+
+The live site is available at: [https://waaronmorris.github.io/economic-data-dashboard/](https://waaronmorris.github.io/economic-data-dashboard/)
+
+## Overview
+
 This is an [Observable Framework](https://observablehq.com/framework/) app. To install the required dependencies, run:
 
 ```
@@ -61,10 +67,6 @@ A typical Framework project looks like this:
 ## Deployment
 
 This project is deployed using GitHub Pages. The site is automatically built and deployed whenever changes are pushed to the main branch.
-
-### Accessing the Site
-
-The live site is available at: [https://waaronmorris.github.io/economic-data-dashboard/](https://waaronmorris.github.io/economic-data-dashboard/)
 
 ### Local Development
 
