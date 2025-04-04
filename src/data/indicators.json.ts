@@ -8,6 +8,8 @@ interface Indicator {
   title: string;
   description: string;
   units: string;
+  group: string;
+  params?: Record<string, any>;
 }
 
 interface Observation {
@@ -29,43 +31,87 @@ const INDICATORS: Record<string, Indicator> = {
     id: "GDPC1",
     title: "Real Gross Domestic Product",
     description: "Quarterly, Seasonally Adjusted Annual Rate",
-    units: "Billions of Chained 2012 Dollars"
+    units: "Billions of Chained 2012 Dollars",
+    group: "National",
+    params: {
+      frequency: "q"
+    }
   },
   UNEMPLOYMENT: {
     id: "UNRATE",
     title: "Unemployment Rate",
     description: "Monthly, Seasonally Adjusted",
-    units: "Percent"
+    units: "Percent",
+    group: "National"
   },
   INFLATION: {
     id: "CPIAUCSL",
     title: "Consumer Price Index (CPI)",
     description: "Monthly, Seasonally Adjusted",
-    units: "Index 1982-1984=100"
+    units: "Percent",
+    group: "National",
+    params: {
+      units: "pch"
+    }
   },
   INTEREST_RATE: {
     id: "FEDFUNDS",
     title: "Federal Funds Rate",
     description: "Monthly, Not Seasonally Adjusted",
-    units: "Percent"
+    units: "Percent",
+    group: "National"
   },
-  M2: {
-    id: "BORROW",
-    title: "Total Borrowings from the Federal Reserve",
-    description: "Monthly, Seasonally Adjusted",
-    units: "Millions of Dollars, Not Seasonally Adjusted"
+  MEDIAN_INCOME: {
+    id: "MEHOINUSA672N",
+    title: "Median Household Income - United States",
+    description: "Annual, Not Seasonally Adjusted",
+    units: "Dollars",
+    group: "National"
   },
+  MEDIAN_HOME_PRICE: {
+    id: "MSPUS",
+    title: "Median Sales Price of Houses Sold - United States",
+    description: "Quarterly, Not Seasonally Adjusted",
+    units: "Dollars",
+    group: "National"
+  },
+  // M2: {
+  //   id: "BORROW",
+  //   title: "Total Borrowings from the Federal Reserve",
+  //   description: "Monthly, Seasonally Adjusted",
+  //   units: "Millions of Dollars, Not Seasonally Adjusted",
+  //   group: "Monetary"
+  // },
   ALUR: {
     id: "ALUR",
     title: "Unemployment Rate - Alabama",
     description: "Monthly, Seasonally Adjusted",
-    units: "Percent, Seasonally Adjusted"
+    units: "Percent, Seasonally Adjusted",
+    group: "Alabama"
   },
   MEHOINUSALA646N: {
     id: "MEHOINUSALA646N",
     title: "Median Household Income - Alabama",
     description: "Monthly, Seasonally Adjusted",
-    units: "Dollars"
+    units: "Dollars",
+    group: "Alabama",
+    params: {
+      units: "lin"
+    }
+  },
+  MEDDAYONMARAL: {
+    id: "MEDDAYONMARAL",
+    title: "Median Days on Market in Alabama",
+    description: "Monthly, Seasonally Adjusted",
+    units: "Dollars",
+    group: "Alabama"
+  },
+  MEDLISPRIAL: {
+    id: "MEDLISPRIAL",
+    title: "Median Listing Price in Alabama",
+    description: "Monthly, Seasonally Adjusted",
+    units: "Dollars",
+    group: "Alabama"
   }
 };
 
@@ -76,7 +122,8 @@ async function loadObservations(
 ): Promise<Observation[]> {
   const response = await api.getSeriesObservations(seriesId, {
     sort_order: "desc",
-    limit: 100,
+    observation_start: "2010-01-01",
+    limit: 1000,
     ...params
   });
   const obs = response.observations || [];
@@ -97,7 +144,11 @@ async function loadCategories(seriesId: string): Promise<any[]> {
 const indicators = Object.values(INDICATORS);
 
 // load all observations
-const observations = await Promise.all(indicators.map((indicator) => loadObservations(indicator.id, {}, indicator)));
+const observations = await Promise.all(
+  indicators.map(async (indicator) => ({
+    [indicator.id]: await loadObservations(indicator.id, { ...indicator.params }, { ...indicator })
+  }))
+);
 
 // print all observations
-process.stdout.write(JSON.stringify(observations));
+process.stdout.write(JSON.stringify(Object.assign({}, ...observations)));

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf src/.observablehq/cache",
-    "build": "observable build",
+    "build": "observable build && cp -r dist/* ./",
     "dev": "observable preview",
     "deploy": "observable deploy",
     "observable": "observable"
@@ -18,6 +18,7 @@
     "dotenv-parse-variables": "^2.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "prettier": "^3.5.2",
     "rimraf": "^5.0.5"
   },
