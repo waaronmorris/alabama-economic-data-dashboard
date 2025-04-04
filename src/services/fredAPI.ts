@@ -43,4 +43,16 @@ export default class FredAPI {
       series_id: seriesId
     });
   }
+
+  async getCategoryChildren(categoryId: number): Promise<{ categories: Array<any> }> {
+    return this.fetchFromFred(`/category/children`, {
+      category_id: categoryId
+    });
+  }
+
+  async getCategorySeries(categoryId: number): Promise<{ seriess: Array<any> }> {
+    return this.fetchFromFred(`/category/series`, {
+      category_id: categoryId
+    });
+  }
 }
