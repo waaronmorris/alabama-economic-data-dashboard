@@ -6,7 +6,7 @@ export default {
   // The pages and sections in the sidebar
   pages: [
     {name: "Home", path: "/"},
-    {name: "Advanced Metrics", path: "/advanced-metrics"}
+    {name: "Living Indicators", path: "/living-indicators"}
   ],
 
   // The base URL for your app
