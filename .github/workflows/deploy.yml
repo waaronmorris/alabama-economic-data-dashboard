@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
