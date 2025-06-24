@@ -1,0 +1,510 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta name="generator" content="Observable Framework v1.13.2" />
+    <title>FRED Economic Dashboard | Economic Data Dashboard</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="./_observablehq/theme-air,near-midnight,alt,wide.db1cdf55.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./_observablehq/theme-air,near-midnight,alt,wide.db1cdf55.css"
+    />
+    <link rel="modulepreload" href="./_observablehq/client.4ba413f8.js" />
+    <link rel="modulepreload" href="./_observablehq/runtime.e080113b.js" />
+    <link rel="modulepreload" href="./_observablehq/stdlib.ec062f48.js" />
+    <link
+      rel="modulepreload"
+      href="./_npm/@observablehq/plot@0.6.17/d761ef9b.js"
+    />
+    <link rel="modulepreload" href="./_npm/htl@0.3.1/72f4716c.js" />
+    <link rel="modulepreload" href="./_npm/d3@7.9.0/e780feca.js" />
+    <link rel="modulepreload" href="./_npm/isoformat@0.2.1/18cbf477.js" />
+    <link
+      rel="modulepreload"
+      href="./_npm/interval-tree-1d@1.0.4/53fe8176.js"
+    />
+    <link rel="modulepreload" href="./_npm/d3-array@3.2.4/e93ca09f.js" />
+    <link rel="modulepreload" href="./_npm/d3-axis@3.0.0/0f2de24d.js" />
+    <link rel="modulepreload" href="./_npm/d3-brush@3.0.0/65eb105b.js" />
+    <link rel="modulepreload" href="./_npm/d3-chord@3.0.1/7ef8fb2e.js" />
+    <link rel="modulepreload" href="./_npm/d3-color@3.1.0/aeb57b94.js" />
+    <link rel="modulepreload" href="./_npm/d3-contour@4.0.2/1d2aed74.js" />
+    <link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/5ced1d52.js" />
+    <link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/9ba9c7f3.js" />
+    <link rel="modulepreload" href="./_npm/d3-drag@3.0.0/4202580c.js" />
+    <link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js" />
+    <link rel="modulepreload" href="./_npm/d3-ease@3.0.1/cdd7e898.js" />
+    <link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/b4e2ad9a.js" />
+    <link rel="modulepreload" href="./_npm/d3-force@3.0.0/5e804d15.js" />
+    <link rel="modulepreload" href="./_npm/d3-format@3.1.0/86074ef6.js" />
+    <link rel="modulepreload" href="./_npm/d3-geo@3.1.1/40599fb3.js" />
+    <link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/e49e792c.js" />
+    <link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/8d1e5425.js" />
+    <link rel="modulepreload" href="./_npm/d3-path@3.1.0/20d3f133.js" />
+    <link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/7553081f.js" />
+    <link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/0dfd751c.js" />
+    <link rel="modulepreload" href="./_npm/d3-random@3.0.1/3c90ee06.js" />
+    <link rel="modulepreload" href="./_npm/d3-scale@4.0.2/843b6a76.js" />
+    <link
+      rel="modulepreload"
+      href="./_npm/d3-scale-chromatic@3.1.0/ba24c2e7.js"
+    />
+    <link rel="modulepreload" href="./_npm/d3-selection@3.0.0/4d94e5b7.js" />
+    <link rel="modulepreload" href="./_npm/d3-shape@3.2.0/6d3a6726.js" />
+    <link rel="modulepreload" href="./_npm/d3-time@3.1.0/9f03c579.js" />
+    <link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/07c9626f.js" />
+    <link rel="modulepreload" href="./_npm/d3-timer@3.0.1/b58a267d.js" />
+    <link rel="modulepreload" href="./_npm/d3-transition@3.0.1/004da2ac.js" />
+    <link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/b5786b3f.js" />
+    <link
+      rel="modulepreload"
+      href="./_npm/binary-search-bounds@2.0.5/cbf6ba23.js"
+    />
+    <link rel="modulepreload" href="./_npm/internmap@2.0.3/e08981d9.js" />
+    <link rel="modulepreload" href="./_npm/delaunator@5.0.1/02d43215.js" />
+    <link
+      rel="modulepreload"
+      href="./_npm/robust-predicates@3.0.2/aa00730b.js"
+    />
+
+    <meta
+      name="description"
+      content="Explore Federal Reserve Economic Data (FRED)"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E"
+    />
+
+    <script type="module">
+      import { define } from "./_observablehq/client.4ba413f8.js";
+      import { registerFile } from "./_observablehq/stdlib.ec062f48.js";
+
+      registerFile("./data/categories.json", {
+        name: "./data/categories.json",
+        mimeType: "application/json",
+        path: "./_file/data/categories.908e81be.json",
+        lastModified: 1750693423441,
+        size: 866,
+      });
+      registerFile("./data/categorySeries.json", {
+        name: "./data/categorySeries.json",
+        mimeType: "application/json",
+        path: "./_file/data/categorySeries.2765c573.json",
+        lastModified: 1750777380707,
+        size: 2524,
+      });
+      registerFile("./data/indicators.json", {
+        name: "./data/indicators.json",
+        mimeType: "application/json",
+        path: "./_file/data/indicators.8a0efd32.json",
+        lastModified: 1750777380223,
+        size: 219593,
+      });
+
+      define({
+        id: "c6374e6d",
+        inputs: ["FileAttachment"],
+        outputs: ["INDICATORS", "CATEGORIES", "CATEGORY_SERIES"],
+        body: (FileAttachment) => {
+          const INDICATORS = FileAttachment("./data/indicators.json").json();
+          const CATEGORIES = FileAttachment("./data/categories.json").json();
+          const CATEGORY_SERIES = FileAttachment(
+            "./data/categorySeries.json",
+          ).json();
+          return { INDICATORS, CATEGORIES, CATEGORY_SERIES };
+        },
+      });
+
+      define({
+        id: "ec4e1223",
+        inputs: ["INDICATORS"],
+        outputs: ["INDICATOR_GROUPS", "INDICATORS_FLAT"],
+        body: (INDICATORS) => {
+          const INDICATOR_GROUPS = Object.values(INDICATORS)
+            .flat()
+            .map((indicator) => {
+              return indicator.group;
+            })
+            .reduce((acc, group) => {
+              if (!acc.includes(group)) {
+                acc.push(group);
+              }
+              return acc;
+            }, []);
+
+          const INDICATORS_FLAT = Object.values(INDICATORS)
+            .flatMap((categoryIndicators) =>
+              categoryIndicators.map((data) => {
+                return {
+                  Indicator: data.id,
+                  Value: Number(data.value),
+                  Date: new Date(data.date),
+                  Units: data.units,
+                  [data.units]: data.value,
+                  Title: data.title,
+                  Description: data.description,
+                  Group: data.group,
+                };
+              }),
+            )
+            .sort((a, b) => a.Date.getTime() - b.Date.getTime());
+          return { INDICATOR_GROUPS, INDICATORS_FLAT };
+        },
+      });
+
+      define({
+        id: "f87161f6",
+        inputs: ["INDICATORS_FLAT", "html"],
+        outputs: ["Plot", "renderIndicatorPlot", "renderIndicatorGroup"],
+        body: async (INDICATORS_FLAT, html) => {
+          const Plot = await import(
+            "./_npm/@observablehq/plot@0.6.17/d761ef9b.js"
+          );
+
+          function renderIndicatorPlot(indicator) {
+            const data = INDICATORS_FLAT.filter(
+              (item) => item.Indicator === indicator,
+            );
+            const indicatorInfo = INDICATORS_FLAT.find(
+              (item) => item.Indicator === indicator,
+            );
+            return Plot.lineY(data, {
+              x: "Date",
+              y: "Value",
+              stroke: "steelblue",
+              strokeWidth: 1.5,
+            }).plot({
+              title: indicatorInfo?.Title,
+              x: { grid: true, label: "Date" },
+              y: { grid: true, label: indicatorInfo?.Units },
+              width: 500,
+              height: 300,
+              margin: 40,
+            });
+          }
+
+          function renderIndicatorGroup(group) {
+            const indicators = INDICATORS_FLAT.filter(
+              (item) => item.Group === group,
+            ).reduce((acc, item) => {
+              if (!acc.includes(item.Indicator)) acc.push(item.Indicator);
+              return acc;
+            }, []);
+
+            return html`
+              <div class="card">
+                <div class="card-header">
+                  <h3>${group}</h3>
+                </div>
+                <div class="grid grid-cols-2">
+                  ${indicators.map(
+                    (indicator) => html`
+                      <div class="card-chart">
+                        ${renderIndicatorPlot(indicator)}
+                      </div>
+                    `,
+                  )}
+                </div>
+              </div>
+            `;
+          }
+          return { Plot, renderIndicatorPlot, renderIndicatorGroup };
+        },
+      });
+
+      define({
+        id: "c233d96e",
+        mode: "inline",
+        inputs: ["INDICATOR_GROUPS", "renderIndicatorGroup", "display"],
+        body: async (INDICATOR_GROUPS, renderIndicatorGroup, display) => {
+          display(
+            await INDICATOR_GROUPS.map((group) => renderIndicatorGroup(group)),
+          );
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <input
+      id="observablehq-sidebar-toggle"
+      type="checkbox"
+      title="Toggle sidebar"
+    />
+    <label
+      id="observablehq-sidebar-backdrop"
+      for="observablehq-sidebar-toggle"
+    ></label>
+    <nav id="observablehq-sidebar">
+      <ol>
+        <label
+          id="observablehq-sidebar-close"
+          for="observablehq-sidebar-toggle"
+        ></label>
+        <li class="observablehq-link observablehq-link-active">
+          <a href="./">Economic Data Dashboard</a>
+        </li>
+      </ol>
+      <div id="observablehq-search">
+        <input type="search" placeholder="Search" />
+      </div>
+      <div id="observablehq-search-results"></div>
+      <script>
+        {
+          const o = document.querySelector("#observablehq-search");
+          o.setAttribute(
+            "data-shortcut",
+            `${/Mac|iPhone/.test(navigator.platform) ? "\u2318" : "Alt-"}K`,
+          );
+          const t = o.querySelector("input"),
+            r = () => import("./_observablehq/search.7dbb81c6.js");
+          t.addEventListener("focus", r, { once: !0 }),
+            t.addEventListener("keydown", r, { once: !0 });
+          const c = document.querySelector("#observablehq-sidebar-toggle");
+          addEventListener("keydown", (e) => {
+            ((e.code === "KeyK" && e.metaKey && !e.altKey && !e.ctrlKey) ||
+              (e.key === "/" &&
+                !e.metaKey &&
+                !e.altKey &&
+                !e.ctrlKey &&
+                e.target === document.body)) &&
+              (c.checked ? t.focus() : (c.click(), t.focus(), c.click()),
+              t.select(),
+              e.preventDefault());
+          });
+        }
+      </script>
+      <ol>
+        <li class="observablehq-link observablehq-link-active">
+          <a href="./">Home</a>
+        </li>
+        <li class="observablehq-link">
+          <a href="./living-indicators">Living Indicators</a>
+        </li>
+      </ol>
+    </nav>
+    <script>
+      {
+        const e = document.querySelector("#observablehq-sidebar"),
+          o = document.querySelector("#observablehq-sidebar-toggle"),
+          r = sessionStorage.getItem("observablehq-sidebar");
+        r ? (o.checked = r === "true") : (o.indeterminate = !0);
+        for (const t of document.querySelectorAll(
+          "#observablehq-sidebar summary",
+        )) {
+          const s = t.parentElement;
+          switch (
+            sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)
+          ) {
+            case "true":
+              s.open = !0;
+              break;
+            case "false":
+              s.classList.contains("observablehq-section-active") ||
+                (s.open = !1);
+              break;
+          }
+        }
+        addEventListener("beforeunload", () =>
+          sessionStorage.setItem(
+            "observablehq-sidebar-scrolly",
+            `${e.scrollTop}`,
+          ),
+        );
+        const a = sessionStorage.getItem("observablehq-sidebar-scrolly");
+        a != null &&
+          ((e.style.cssText = "overflow: hidden;"),
+          (e.scrollTop = +a),
+          (e.style.cssText = ""));
+      }
+    </script>
+    <div id="observablehq-center">
+      <aside
+        id="observablehq-toc"
+        data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]"
+      >
+        <nav>
+          <div>Contents</div>
+          <ol>
+            <li class="observablehq-secondary-link">
+              <a href="#economic-indicators-dashboard"
+                >Economic Indicators Dashboard</a
+              >
+            </li>
+          </ol>
+        </nav>
+      </aside>
+      <main id="observablehq-main" class="observablehq">
+        <div class="observablehq observablehq--block"><!--:c6374e6d:--></div>
+        <div class="observablehq observablehq--block"><!--:ec4e1223:--></div>
+        <div class="observablehq observablehq--block"><!--:f87161f6:--></div>
+        <h2 id="economic-indicators-dashboard" tabindex="-1">
+          <a
+            class="observablehq-header-anchor"
+            href="#economic-indicators-dashboard"
+            >Economic Indicators Dashboard</a
+          >
+        </h2>
+        <!-- Loop through INDICATOR_GROUPS and render each group -->
+        <div class="dashboard-grid">
+          <observablehq-loading></observablehq-loading
+          ><!--:c233d96e:-->
+        </div>
+        <style>
+          .grid {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+          }
+
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          @media (max-width: 1024px) {
+            .grid-cols-2 {
+              grid-template-columns: 1fr;
+            }
+          }
+
+          .card {
+            background: var(--theme-background-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow:
+              0 4px 6px rgba(0, 0, 0, 0.05),
+              0 1px 3px rgba(0, 0, 0, 0.1);
+            transition:
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+          }
+
+          .card:hover {
+            transform: translateY(-2px);
+            box-shadow:
+              0 6px 8px rgba(0, 0, 0, 0.08),
+              0 2px 4px rgba(0, 0, 0, 0.12);
+          }
+
+          .card-header h3 {
+            margin: 0 0 1.5rem 0;
+            color: var(--theme-foreground-focus);
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+          }
+
+          .card-chart {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--theme-background-primary);
+            border-radius: 8px;
+            overflow: hidden;
+          }
+
+          .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin: 2rem 0;
+            padding: 0 1rem;
+          }
+
+          section {
+            margin-bottom: 4rem;
+          }
+
+          section h2 {
+            margin-bottom: 2rem;
+            color: var(--theme-foreground-focus);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            position: relative;
+            padding-bottom: 0.5rem;
+          }
+
+          section h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--theme-primary);
+            border-radius: 2px;
+          }
+
+          /* Add a subtle gradient background to the page */
+          body {
+            background: linear-gradient(
+              to bottom,
+              var(--theme-background-primary),
+              var(--theme-background-secondary)
+            );
+            min-height: 100vh;
+          }
+
+          /* Make the plots more visually appealing */
+          svg {
+            border-radius: 8px;
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .card {
+              padding: 1.5rem;
+            }
+
+            .card-header h3 {
+              font-size: 1.2rem;
+            }
+
+            section h2 {
+              font-size: 1.6rem;
+            }
+          }
+        </style>
+      </main>
+      <footer id="observablehq-footer">
+        <nav>
+          <a rel="next" href="./living-indicators"
+            ><span>Living Indicators</span></a
+          >
+        </nav>
+        <div>
+          Built with
+          <a
+            href="https://observablehq.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Observable</a
+          >
+          on <a title="2025-06-24T10:02:52">Jun 24, 2025</a>.
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

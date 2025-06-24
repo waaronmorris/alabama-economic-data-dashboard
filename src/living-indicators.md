@@ -5,8 +5,20 @@ toc: true
 ---
 
 ```js
+import { html } from "npm:htl";
+import * as Plot from "npm:@observablehq/plot";
+
 const INDICATORS = FileAttachment("data/indicators.json").json();
 console.log("Loaded INDICATORS:", INDICATORS);
+
+// Import our new components
+import { createDateFilter, filterDataByDateRange, getDateRangeFromFilter } from "./components/dateFilter.js";
+import {
+  createGridControls,
+  getGridClass,
+  getChartDimensions,
+  getGridSettingsFromControls
+} from "./components/gridControls.js";
 ```
 
 ```js
@@ -77,10 +89,6 @@ const ADVANCED_INDICATORS = {
 // Load the indicators data
 const INDICATORS_FLAT = [];
 
-// Set default start date to 5 years ago
-const DEFAULT_START_DATE = new Date();
-DEFAULT_START_DATE.setFullYear(DEFAULT_START_DATE.getFullYear() - 9);
-
 // Process each indicator
 for (const [key, value] of Object.entries(INDICATORS)) {
   console.log(`Processing indicator: ${key}`, value);
@@ -117,17 +125,18 @@ for (const [key, value] of Object.entries(INDICATORS)) {
 INDICATORS_FLAT.sort((a, b) => a.Date.getTime() - b.Date.getTime());
 console.log("Flattened INDICATORS_FLAT:", INDICATORS_FLAT);
 
-// Function to filter data by date range
-function filterDataByDate(data, startDate) {
-  if (!startDate) return data;
-  return data.filter((d) => d.Date >= startDate);
+// Function to filter data by date range (updated to use new filter)
+function filterDataByDate(data, startDate, endDate) {
+  return filterDataByDateRange(data, startDate, endDate);
 }
+```
 
+```js
 // Function to calculate the Misery Index
-function calculateMiseryIndex(unemploymentData, inflationData, startDate = DEFAULT_START_DATE) {
-  // Filter data by start date
-  unemploymentData = filterDataByDate(unemploymentData, startDate);
-  inflationData = filterDataByDate(inflationData, startDate);
+function calculateMiseryIndex(unemploymentData, inflationData, dateRange) {
+  // Filter data by date range
+  unemploymentData = filterDataByDate(unemploymentData, dateRange.startDate, dateRange.endDate);
+  inflationData = filterDataByDate(inflationData, dateRange.startDate, dateRange.endDate);
 
   // Ensure both datasets have the same dates
   const commonDates = unemploymentData
@@ -148,10 +157,10 @@ function calculateMiseryIndex(unemploymentData, inflationData, startDate = DEFAU
 }
 
 // Function to calculate Housing Affordability
-function calculateHousingAffordability(incomeData, priceData, startDate = DEFAULT_START_DATE) {
-  // Filter data by start date
-  incomeData = filterDataByDate(incomeData, startDate);
-  priceData = filterDataByDate(priceData, startDate);
+function calculateHousingAffordability(incomeData, priceData, dateRange) {
+  // Filter data by date range
+  incomeData = filterDataByDate(incomeData, dateRange.startDate, dateRange.endDate);
+  priceData = filterDataByDate(priceData, dateRange.startDate, dateRange.endDate);
 
   console.log("Calculating Housing Affordability with:", {
     incomeData,
@@ -185,10 +194,10 @@ function calculateHousingAffordability(incomeData, priceData, startDate = DEFAUL
 }
 
 // Function to calculate Real Interest Rate
-function calculateRealInterestRate(interestData, inflationData, startDate = DEFAULT_START_DATE) {
-  // Filter data by start date
-  interestData = filterDataByDate(interestData, startDate);
-  inflationData = filterDataByDate(inflationData, startDate);
+function calculateRealInterestRate(interestData, inflationData, dateRange) {
+  // Filter data by date range
+  interestData = filterDataByDate(interestData, dateRange.startDate, dateRange.endDate);
+  inflationData = filterDataByDate(inflationData, dateRange.startDate, dateRange.endDate);
 
   // Ensure both datasets have the same dates
   const commonDates = interestData
@@ -239,16 +248,20 @@ function calculateEWMA(data, smoothingFactor = 0.2) {
 
   return result;
 }
+```
 
+```js
 // Function to render an advanced indicator
-function renderAdvancedIndicator(indicator) {
+function renderAdvancedIndicator(indicator, dateRange, gridColumns) {
+  const dimensions = getChartDimensions(gridColumns, window.innerWidth < 768);
+
   if (indicator.id === "MISERY_INDEX") {
     // Get the component data
     const unemploymentData = INDICATORS_FLAT.filter((item) => item.Indicator === "UNRATE");
     const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
 
     // Calculate the Misery Index with date filter
-    const miseryIndexData = calculateMiseryIndex(unemploymentData, inflationData);
+    const miseryIndexData = calculateMiseryIndex(unemploymentData, inflationData, dateRange);
 
     // Calculate the exponentially weighted moving average
     const ewmaData = calculateEWMA(miseryIndexData, 0.5);
@@ -259,8 +272,8 @@ function renderAdvancedIndicator(indicator) {
       subtitle: indicator.description,
       x: { grid: true, label: "Date" },
       y: { grid: true, label: indicator.units },
-      width: 800,
-      height: 400,
+      width: dimensions.width,
+      height: dimensions.height,
       margin: 40,
       marks: [
         // Original data line
@@ -288,8 +301,8 @@ function renderAdvancedIndicator(indicator) {
     const alabamaPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
 
     // Calculate Housing Affordability for both with date filter
-    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData);
-    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData);
+    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
+    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData, dateRange);
 
     // Calculate the exponentially weighted moving average for both
     const nationalEwmaData = calculateEWMA(nationalAffordabilityData, 0.65);
@@ -299,12 +312,12 @@ function renderAdvancedIndicator(indicator) {
     const allDates = [...nationalAffordabilityData, ...alabamaAffordabilityData].map((d) => d.Date);
     const startDate = new Date(Math.min(...allDates.map((d) => d.getTime())));
     const endDate = new Date(Math.max(...allDates.map((d) => d.getTime())));
-    const dateRange = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+    const dateRange_str = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
 
     // Create the plot with both national and Alabama data
     return Plot.plot({
       title: "Housing Affordability Comparison",
-      subtitle: `Comparing national and Alabama housing affordability indices. Higher values indicate more affordable housing.\n${dateRange}`,
+      subtitle: `Comparing national and Alabama housing affordability indices. Higher values indicate more affordable housing.\n${dateRange_str}`,
       x: {
         grid: true,
         label: "Date",
@@ -318,8 +331,8 @@ function renderAdvancedIndicator(indicator) {
         domain: [15, 35],
         tickFormat: (d) => d.toFixed(1)
       },
-      width: 800,
-      height: 400,
+      width: dimensions.width,
+      height: dimensions.height,
       margin: 60,
       marks: [
         // National data line
@@ -392,13 +405,13 @@ function renderAdvancedIndicator(indicator) {
     const priceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
 
     // Calculate Housing Affordability with date filter
-    const affordabilityData = calculateHousingAffordability(incomeData, priceData);
+    const affordabilityData = calculateHousingAffordability(incomeData, priceData, dateRange);
 
     // Calculate the exponentially weighted moving average
     const ewmaData = calculateEWMA(affordabilityData, 0.6);
 
     // Get date range for subtitle
-    const dateRange =
+    const dateRange_str =
       affordabilityData.length > 0
         ? `Data from ${affordabilityData[0].Date.toLocaleDateString()} to ${affordabilityData[affordabilityData.length - 1].Date.toLocaleDateString()}`
         : "No data available";
@@ -406,7 +419,7 @@ function renderAdvancedIndicator(indicator) {
     // Create the plot with both a line and an EWMA line
     return Plot.plot({
       title: indicator.title,
-      subtitle: `${indicator.description}\n${dateRange}`,
+      subtitle: `${indicator.description}\n${dateRange_str}`,
       x: {
         grid: true,
         label: "Date",
@@ -418,8 +431,8 @@ function renderAdvancedIndicator(indicator) {
         label: indicator.units,
         nice: true
       },
-      width: 800,
-      height: 400,
+      width: dimensions.width,
+      height: dimensions.height,
       margin: 60,
       marks: [
         // Original data line
@@ -452,7 +465,7 @@ function renderAdvancedIndicator(indicator) {
     const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
 
     // Calculate Real Interest Rate with date filter
-    const realInterestData = calculateRealInterestRate(interestData, inflationData);
+    const realInterestData = calculateRealInterestRate(interestData, inflationData, dateRange);
 
     // Calculate the exponentially weighted moving average
     const ewmaData = calculateEWMA(realInterestData, 0.2);
@@ -463,8 +476,8 @@ function renderAdvancedIndicator(indicator) {
       subtitle: indicator.description,
       x: { grid: true, label: "Date" },
       y: { grid: true, label: indicator.units },
-      width: 800,
-      height: 400,
+      width: dimensions.width,
+      height: dimensions.height,
       margin: 40,
       marks: [
         // Original data line
@@ -492,8 +505,8 @@ function renderAdvancedIndicator(indicator) {
     const alabamaPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
 
     // Calculate Housing Affordability for both with date filter
-    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData);
-    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData);
+    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
+    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData, dateRange);
 
     // Calculate divergence
     const commonDates = nationalAffordabilityData
@@ -517,12 +530,12 @@ function renderAdvancedIndicator(indicator) {
     // Get date range for subtitle
     const startDate = new Date(Math.min(...divergenceData.map((d) => d.Date.getTime())));
     const endDate = new Date(Math.max(...divergenceData.map((d) => d.Date.getTime())));
-    const dateRange = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+    const dateRange_str = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
 
     // Create the divergence plot
     return Plot.plot({
       title: "Housing Affordability Divergence: Alabama vs National",
-      subtitle: `Shows how Alabama's housing affordability differs from the national average.\nPositive values mean Alabama is more affordable. ${dateRange}`,
+      subtitle: `Shows how Alabama's housing affordability differs from the national average.\nPositive values mean Alabama is more affordable. ${dateRange_str}`,
       x: {
         grid: true,
         label: "Date",
@@ -535,8 +548,8 @@ function renderAdvancedIndicator(indicator) {
         domain: [-5, 5],
         tickFormat: (d) => d.toFixed(1)
       },
-      width: 800,
-      height: 400,
+      width: dimensions.width,
+      height: dimensions.height,
       margin: 60,
       marks: [
         // Zero line
@@ -584,54 +597,257 @@ function renderAdvancedIndicator(indicator) {
 }
 ```
 
+```js
+// Create the date filter control for advanced indicators
+const advancedDateFilterControl = createDateFilter(
+  INDICATORS_FLAT,
+  new Date(new Date().getFullYear() - 9, 0, 1),
+  new Date()
+);
+```
+
+```js
+// Create the grid controls (no group toggle for advanced indicators)
+const advancedGridControlsElement = createGridControls(1, false);
+```
+
+```js
+// Initial advanced dashboard content
+const initialAdvancedDashboardContent = html`<div class="grid grid-cols-1">
+  ${Object.values(ADVANCED_INDICATORS).map(
+    (indicator) => html`
+      <div class="card">
+        <div class="card-chart">
+          ${renderAdvancedIndicator(
+            indicator,
+            {
+              startDate: new Date(new Date().getFullYear() - 9, 0, 1),
+              endDate: new Date()
+            },
+            1
+          )}
+        </div>
+      </div>
+    `
+  )}
+</div>`;
+```
+
 ## Advanced Economic Indicators
 
-### Misery Index
-
-<div class="card">
-  <div class="card-chart">
-    ${renderAdvancedIndicator(ADVANCED_INDICATORS.MISERY_INDEX)}
+<div class="dashboard-controls">
+  <div class="controls-row">
+    ${advancedDateFilterControl}
+    ${advancedGridControlsElement}
   </div>
 </div>
 
-### Housing Affordability Comparison
-
-<div class="card">
-  <div class="card-chart">
-    ${renderAdvancedIndicator(ADVANCED_INDICATORS.HOUSING_AFFORDABILITY)}
-  </div>
-</div>
-
-### Housing Affordability Divergence
-
-<div class="card">
-  <div class="card-chart">
-    ${renderAdvancedIndicator(ADVANCED_INDICATORS.HOUSING_DIVERGENCE)}
-  </div>
-</div>
-
-### Real Interest Rate
-
-<div class="card">
-  <div class="card-chart">
-    ${renderAdvancedIndicator(ADVANCED_INDICATORS.REAL_INTEREST_RATE)}
-  </div>
+<div class="advanced-dashboard-content">
+  ${initialAdvancedDashboardContent}
 </div>
 
 <style>
+/* Dashboard Controls */
+.dashboard-controls {
+  background: var(--theme-background-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.controls-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Date Filter Styles */
+.date-filter {
+  flex: 1;
+  min-width: 300px;
+}
+
+.date-filter-header h4 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-foreground-focus);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.date-filter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.date-inputs {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.date-input-group label {
+  font-size: 0.875rem;
+  color: var(--theme-foreground-muted);
+  font-weight: 500;
+}
+
+.date-input-group input {
+  padding: 0.5rem;
+  border: 1px solid var(--theme-foreground-faint);
+  border-radius: 6px;
+  background: var(--theme-background-primary);
+  color: var(--theme-foreground);
+  font-size: 0.875rem;
+}
+
+.date-presets {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--theme-foreground-faint);
+  border-radius: 6px;
+  background: var(--theme-background-primary);
+  color: var(--theme-foreground);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  background: var(--theme-background-secondary);
+  border-color: var(--theme-primary);
+}
+
+.preset-btn.active {
+  background: var(--theme-primary);
+  color: white;
+  border-color: var(--theme-primary);
+}
+
+/* Grid Controls Styles */
+.grid-controls {
+  flex: 1;
+  min-width: 250px;
+}
+
+.grid-controls-header h4 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-foreground-focus);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.grid-controls-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.grid-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--theme-foreground-faint);
+  border-radius: 6px;
+  background: var(--theme-background-primary);
+  color: var(--theme-foreground);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.grid-btn:hover {
+  background: var(--theme-background-secondary);
+  border-color: var(--theme-primary);
+}
+
+.grid-btn.active {
+  background: var(--theme-primary);
+  color: white;
+  border-color: var(--theme-primary);
+}
+
+.grid-controls-toggle {
+  margin-top: 0.5rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--theme-foreground);
+}
+
+.toggle-label input[type="checkbox"] {
+  accent-color: var(--theme-primary);
+}
+
+/* Grid System */
 .grid {
   display: grid;
   gap: 1.5rem;
   margin: 2rem 0;
 }
 
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Responsive Grid */
+@media (max-width: 1200px) {
+  .grid-cols-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
-  .grid-cols-2 {
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
     grid-template-columns: 1fr;
+  }
+  
+  .controls-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .date-inputs {
+    flex-direction: column;
   }
 }
 
@@ -679,6 +895,20 @@ function renderAdvancedIndicator(indicator) {
   gap: 3rem;
   margin: 2rem 0;
   padding: 0 1rem;
+}
+
+.error-message {
+  background: var(--theme-background-secondary);
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.error-message h3 {
+  color: #ff6b6b;
+  margin: 0 0 1rem 0;
 }
 
 section {
@@ -736,7 +966,3 @@ svg {
   }
 }
 </style>
-
-```
-
-```

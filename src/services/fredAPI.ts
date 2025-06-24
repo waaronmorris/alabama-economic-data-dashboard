@@ -1,4 +1,4 @@
-const FRED_API_KEY = process.env.REACT_APP_FRED_API_KEY;
+const FRED_API_KEY = process.env.FRED_API_KEY;
 const BASE_URL = "https://api.stlouisfed.org/fred";
 
 export default class FredAPI {
@@ -6,7 +6,7 @@ export default class FredAPI {
 
   constructor(apiKey: string = FRED_API_KEY) {
     if (!apiKey) {
-      throw new Error("FRED API key is required. Please set REACT_APP_FRED_API_KEY environment variable.");
+      throw new Error("FRED API key is required. Please set FRED_API_KEY environment variable.");
     }
     this.apiKey = apiKey;
   }

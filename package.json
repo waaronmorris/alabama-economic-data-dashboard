@@ -15,7 +15,8 @@
     "d3-time-format": "^4.1.0",
     "dotenv": "^16.4.7",
     "dotenv-extended": "^2.9.0",
-    "dotenv-parse-variables": "^2.0.0"
+    "dotenv-parse-variables": "^2.0.0",
+    "puppeteer": "^24.10.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

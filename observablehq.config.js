@@ -2,11 +2,11 @@
 export default {
   // The app's title
   title: "Economic Data Dashboard",
-  
+
   // The pages and sections in the sidebar
   pages: [
-    {name: "Home", path: "/"},
-    {name: "Living Indicators", path: "/living-indicators"}
+    { name: "Home", path: "/" },
+    { name: "Living Indicators", path: "/living-indicators" },
   ],
 
   // The base URL for your app
@@ -20,7 +20,7 @@ export default {
 
   // Theme configuration
   theme: "light",
-  
+
   // Enable search
   search: true,
 
@@ -32,5 +32,5 @@ export default {
 
   // Environment variables that should be exposed to client-side code
   // using process.env
-  env: ["FRED_API_KEY"]
+  env: ["FRED_API_KEY"],
 };

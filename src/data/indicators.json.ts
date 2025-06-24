@@ -1,6 +1,43 @@
-import FredAPI from "../services/fredAPI";
+// Simple FRED API implementation for data loader
+const FRED_API_KEY = process.env.FRED_API_KEY || "1ab81b4a114ce8409d7536c8eb36049e";
+const BASE_URL = "https://api.stlouisfed.org/fred";
 
-const api = new FredAPI();
+class SimpleFredAPI {
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  private apiKey: string;
+
+  private async fetchFromFred(endpoint: string, params: Record<string, any> = {}): Promise<any> {
+    const queryParams = new URLSearchParams({
+      api_key: this.apiKey,
+      file_type: "json",
+      ...params
+    });
+
+    const url = `${BASE_URL}${endpoint}?${queryParams}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`FRED API error: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async getSeriesObservations(
+    seriesId: string,
+    params: Record<string, any> = {}
+  ): Promise<{ observations: Array<{ date: string; value: string }> }> {
+    return this.fetchFromFred(`/series/observations`, {
+      series_id: seriesId,
+      ...params
+    });
+  }
+}
+
+const api = new SimpleFredAPI(FRED_API_KEY);
 
 // Define interfaces for our data structures
 interface Indicator {
@@ -130,8 +167,7 @@ async function loadObservations(
   return obs.map((obs) => ({
     ...metadata,
     value: obs.value,
-    date: new Date(obs.date),
-    [obs.units]: obs.value
+    date: new Date(obs.date)
   }));
 }
 
