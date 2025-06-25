@@ -6,7 +6,8 @@ export default {
   // The pages and sections in the sidebar
   pages: [
     { name: "Home", path: "/" },
-    { name: "Living Indicators", path: "/living-indicators" },
+    { name: "Alabama Dashboard", path: "/alabama-dashboard" },
+    { name: "Economic Insights", path: "/living-indicators" },
   ],
 
   // The base URL for your app

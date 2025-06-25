@@ -1,5 +1,5 @@
 ---
-title: Advanced Economic Metrics
+title: Economic Insights
 theme: dashboard
 toc: true
 ---
@@ -9,9 +9,8 @@ import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 
 const INDICATORS = FileAttachment("data/indicators.json").json();
-console.log("Loaded INDICATORS:", INDICATORS);
 
-// Import our new components
+// Import our components
 import { createDateFilter, filterDataByDateRange, getDateRangeFromFilter } from "./components/dateFilter.js";
 import {
   createGridControls,
@@ -22,78 +21,11 @@ import {
 ```
 
 ```js
-// Define advanced composite economic indicators
-const ADVANCED_INDICATORS = {
-  MISERY_INDEX: {
-    id: "MISERY_INDEX",
-    title: "Misery Index",
-    description:
-      "The Misery Index is like a 'how hard is life right now?' score. It adds together two things: how many people can't find jobs (unemployment) and how much more expensive things are getting (inflation). The higher the number, the harder it is for regular people to make ends meet.",
-    formula: "Unemployment Rate + Inflation Rate",
-    components: ["UNRATE", "CPIAUCSL"],
-    units: "Percentage Points",
-    group: "Composite Indicators"
-  },
-  HOUSING_AFFORDABILITY: {
-    id: "HOUSING_AFFORDABILITY",
-    title: "Housing Affordability Index",
-    description:
-      "This index shows how affordable housing is for the average person. It compares median household income to median home prices. A higher number means housing is more affordable, while a lower number means it's harder for people to buy homes.",
-    formula: "Median Household Income / Median Home Price × 100",
-    components: ["MEHOINUSA672N", "MSPUS"],
-    units: "Index (100 = baseline affordability)",
-    group: "Housing Indicators"
-  },
-  ALABAMA_HOUSING_AFFORDABILITY: {
-    id: "ALABAMA_HOUSING_AFFORDABILITY",
-    title: "Alabama Housing Affordability Index",
-    description:
-      "This index shows how affordable housing is for the average person in Alabama. It compares median household income to median home prices in Alabama. A higher number means housing is more affordable, while a lower number means it's harder for people to buy homes in Alabama.",
-    formula: "Alabama Median Household Income / Alabama Median Home Price × 100",
-    components: ["MEHOINUSALA646N", "MEDLISPRIAL"],
-    units: "Index (100 = baseline affordability)",
-    group: "Housing Indicators"
-  },
-  REAL_INTEREST_RATE: {
-    id: "REAL_INTEREST_RATE",
-    title: "Real Interest Rate",
-    description:
-      "The Real Interest Rate shows how much money you're really making (or losing) when you save money in the bank. It's the interest rate minus inflation. A positive number means your savings are growing in real terms, while a negative number means inflation is eating away at your savings.",
-    formula: "Nominal Interest Rate - Inflation Rate",
-    components: ["FEDFUNDS", "CPIAUCSL"],
-    units: "Percentage Points",
-    group: "Financial Indicators"
-  },
-  ECONOMIC_GROWTH_INDEX: {
-    id: "ECONOMIC_GROWTH_INDEX",
-    title: "Economic Growth Index",
-    description:
-      "This index combines GDP growth with job creation to give a simple picture of how the economy is growing. It helps show if the economy is getting stronger or weaker over time.",
-    formula: "GDP Growth Rate + Employment Growth Rate",
-    components: ["GDPC1", "UNRATE"],
-    units: "Percentage Points",
-    group: "Growth Indicators"
-  },
-  HOUSING_DIVERGENCE: {
-    id: "HOUSING_DIVERGENCE",
-    title: "Housing Affordability Divergence",
-    description:
-      "Shows how Alabama's housing affordability differs from the national trend. Positive values indicate Alabama is more affordable than the national average, negative values indicate it's less affordable.",
-    formula: "Alabama Affordability Index - National Affordability Index",
-    components: ["HOUSING_AFFORDABILITY", "ALABAMA_HOUSING_AFFORDABILITY"],
-    units: "Percentage Points",
-    group: "Housing Indicators"
-  }
-};
-
-// Load the indicators data
+// Process the indicators data
 const INDICATORS_FLAT = [];
 
-// Process each indicator
 for (const [key, value] of Object.entries(INDICATORS)) {
-  console.log(`Processing indicator: ${key}`, value);
   if (Array.isArray(value)) {
-    // Handle array of indicators
     value.forEach((data) => {
       INDICATORS_FLAT.push({
         Indicator: data.id,
@@ -106,39 +38,121 @@ for (const [key, value] of Object.entries(INDICATORS)) {
         Group: data.group
       });
     });
-  } else if (typeof value === "object" && value !== null) {
-    // Handle single indicator
-    INDICATORS_FLAT.push({
-      Indicator: value.id,
-      Value: Number(value.value),
-      Date: new Date(value.date),
-      Units: value.units,
-      [value.units]: value.value,
-      Title: value.title,
-      Description: value.description,
-      Group: value.group
-    });
   }
 }
 
-// Sort by date
 INDICATORS_FLAT.sort((a, b) => a.Date.getTime() - b.Date.getTime());
-console.log("Flattened INDICATORS_FLAT:", INDICATORS_FLAT);
-
-// Function to filter data by date range (updated to use new filter)
-function filterDataByDate(data, startDate, endDate) {
-  return filterDataByDateRange(data, startDate, endDate);
-}
 ```
 
 ```js
-// Function to calculate the Misery Index
-function calculateMiseryIndex(unemploymentData, inflationData, dateRange) {
-  // Filter data by date range
-  unemploymentData = filterDataByDate(unemploymentData, dateRange.startDate, dateRange.endDate);
-  inflationData = filterDataByDate(inflationData, dateRange.startDate, dateRange.endDate);
+// Define insight categories with better organization
+const INSIGHT_CATEGORIES = {
+  "Economic Health": {
+    insights: ["MISERY_INDEX", "REAL_INTEREST_RATE"],
+    color: "#e74c3c",
+    description: "Key indicators of economic stress and financial conditions affecting everyday Americans",
+    icon: "📊"
+  },
+  "Housing Market": {
+    insights: ["HOUSING_AFFORDABILITY", "HOUSING_DIVERGENCE"],
+    color: "#27ae60", 
+    description: "Analysis of housing affordability and regional market differences",
+    icon: "🏠"
+  },
+  "Growth Analysis": {
+    insights: ["ECONOMIC_GROWTH_INDEX"],
+    color: "#3498db",
+    description: "Comprehensive measures of economic expansion and prosperity",
+    icon: "📈"
+  }
+};
 
-  // Ensure both datasets have the same dates
+// Define improved insight definitions
+const ECONOMIC_INSIGHTS = {
+  MISERY_INDEX: {
+    id: "MISERY_INDEX",
+    title: "Economic Misery Index",
+    subtitle: "How tough are times for average Americans?",
+    description: "Combines unemployment and inflation rates to measure economic hardship. Higher values indicate more difficult economic conditions for families.",
+    formula: "Unemployment Rate + Inflation Rate",
+    components: ["UNRATE", "CPIAUCSL"],
+    units: "Percentage Points",
+    category: "Economic Health",
+    interpretation: {
+      low: "Times are relatively good - jobs are available and prices are stable",
+      medium: "Moderate economic stress - some challenges with jobs or rising prices", 
+      high: "Economic hardship - difficult job market and/or rapidly rising prices"
+    }
+  },
+  REAL_INTEREST_RATE: {
+    id: "REAL_INTEREST_RATE",
+    title: "Real Interest Rate",
+    subtitle: "Are your savings actually growing?",
+    description: "Shows whether interest rates are keeping up with inflation. Positive means your money grows, negative means inflation is eating your savings.",
+    formula: "Federal Funds Rate - Inflation Rate",
+    components: ["FEDFUNDS", "CPIAUCSL"],
+    units: "Percentage Points",
+    category: "Economic Health",
+    interpretation: {
+      positive: "Good for savers - interest rates beat inflation",
+      negative: "Tough for savers - inflation is higher than interest rates",
+      neutral: "Break-even - interest rates match inflation"
+    }
+  },
+  HOUSING_AFFORDABILITY: {
+    id: "HOUSING_AFFORDABILITY",
+    title: "Housing Affordability Comparison",
+    subtitle: "How affordable is housing across different regions?",
+    description: "Compares how much income is needed to afford a typical home. Higher values mean housing is more affordable relative to income.",
+    formula: "Median Income / Median Home Price × 100",
+    components: ["MEHOINUSA672N", "MSPUS", "MEHOINUSALA646N", "MEDLISPRIAL"],
+    units: "Affordability Index",
+    category: "Housing Market",
+    interpretation: {
+      high: "Housing is relatively affordable compared to incomes",
+      medium: "Moderate housing affordability challenges",
+      low: "Housing is expensive relative to typical incomes"
+    }
+  },
+  HOUSING_DIVERGENCE: {
+    id: "HOUSING_DIVERGENCE", 
+    title: "Regional Housing Gap",
+    subtitle: "How does Alabama compare to national housing costs?",
+    description: "Shows whether Alabama housing is more or less affordable than the national average. Positive means Alabama is more affordable.",
+    formula: "Alabama Affordability - National Affordability",
+    components: ["HOUSING_AFFORDABILITY"],
+    units: "Percentage Point Difference",
+    category: "Housing Market",
+    interpretation: {
+      positive: "Alabama housing is more affordable than national average",
+      negative: "Alabama housing is less affordable than national average",
+      neutral: "Alabama housing affordability matches national average"
+    }
+  },
+  ECONOMIC_GROWTH_INDEX: {
+    id: "ECONOMIC_GROWTH_INDEX",
+    title: "Economic Momentum Index",
+    subtitle: "Is the economy expanding or contracting?",
+    description: "Combines GDP growth with employment trends to show overall economic momentum and direction.",
+    formula: "GDP Growth Rate + Employment Change Rate",
+    components: ["GDPC1", "UNRATE"],
+    units: "Growth Index Points",
+    category: "Growth Analysis",
+    interpretation: {
+      positive: "Economy is expanding - more jobs and higher output",
+      negative: "Economic contraction - declining output and employment",
+      neutral: "Economic stability - little change in growth or employment"
+    }
+  }
+};
+```
+
+```js
+// Calculate composite indicators
+function calculateMiseryIndex(unemploymentData, inflationData, dateRange) {
+  unemploymentData = filterDataByDateRange(unemploymentData, dateRange.startDate, dateRange.endDate);
+  inflationData = filterDataByDateRange(inflationData, dateRange.startDate, dateRange.endDate);
+
   const commonDates = unemploymentData
     .map((d) => d.Date)
     .filter((date) => inflationData.some((d) => d.Date.getTime() === date.getTime()));
@@ -156,29 +170,17 @@ function calculateMiseryIndex(unemploymentData, inflationData, dateRange) {
   });
 }
 
-// Function to calculate Housing Affordability
 function calculateHousingAffordability(incomeData, priceData, dateRange) {
-  // Filter data by date range
-  incomeData = filterDataByDate(incomeData, dateRange.startDate, dateRange.endDate);
-  priceData = filterDataByDate(priceData, dateRange.startDate, dateRange.endDate);
+  incomeData = filterDataByDateRange(incomeData, dateRange.startDate, dateRange.endDate);
+  priceData = filterDataByDateRange(priceData, dateRange.startDate, dateRange.endDate);
 
-  console.log("Calculating Housing Affordability with:", {
-    incomeData,
-    priceData
-  });
-
-  // Ensure both datasets have the same dates
   const commonDates = incomeData
     .map((d) => d.Date)
     .filter((date) => priceData.some((d) => d.Date.getTime() === date.getTime()));
 
-  console.log("Common dates found:", commonDates);
-
-  const result = commonDates.map((date) => {
+  return commonDates.map((date) => {
     const income = incomeData.find((d) => d.Date.getTime() === date.getTime())?.Value || 0;
     const price = priceData.find((d) => d.Date.getTime() === date.getTime())?.Value || 0;
-
-    // Calculate affordability index (higher is more affordable)
     const affordability = price > 0 ? (income / price) * 100 : 0;
 
     return {
@@ -188,18 +190,12 @@ function calculateHousingAffordability(incomeData, priceData, dateRange) {
       Price: price
     };
   });
-
-  console.log("Calculated affordability result:", result);
-  return result;
 }
 
-// Function to calculate Real Interest Rate
 function calculateRealInterestRate(interestData, inflationData, dateRange) {
-  // Filter data by date range
-  interestData = filterDataByDate(interestData, dateRange.startDate, dateRange.endDate);
-  inflationData = filterDataByDate(inflationData, dateRange.startDate, dateRange.endDate);
+  interestData = filterDataByDateRange(interestData, dateRange.startDate, dateRange.endDate);
+  inflationData = filterDataByDateRange(inflationData, dateRange.startDate, dateRange.endDate);
 
-  // Ensure both datasets have the same dates
   const commonDates = interestData
     .map((d) => d.Date)
     .filter((date) => inflationData.some((d) => d.Date.getTime() === date.getTime()));
@@ -217,27 +213,15 @@ function calculateRealInterestRate(interestData, inflationData, dateRange) {
   });
 }
 
-// Function to calculate an exponentially weighted moving average
-function calculateEWMA(data, smoothingFactor = 0.2) {
+function calculateEWMA(data, smoothingFactor = 0.3) {
   if (!data || data.length === 0) return [];
-
-  // Sort data by date to ensure chronological order
+  
   const sortedData = [...data].sort((a, b) => a.Date.getTime() - b.Date.getTime());
+  const result = [{ Date: sortedData[0].Date, Value: sortedData[0].Value }];
 
-  // Initialize the result array with the first data point
-  const result = [
-    {
-      Date: sortedData[0].Date,
-      Value: sortedData[0].Value
-    }
-  ];
-
-  // Calculate EWMA for each subsequent point
   for (let i = 1; i < sortedData.length; i++) {
     const currentValue = sortedData[i].Value;
     const previousEWMA = result[i - 1].Value;
-
-    // EWMA formula: EMA = α × current + (1 - α) × previous EMA
     const ewma = smoothingFactor * currentValue + (1 - smoothingFactor) * previousEWMA;
 
     result.push({
@@ -251,402 +235,523 @@ function calculateEWMA(data, smoothingFactor = 0.2) {
 ```
 
 ```js
-// Function to render an advanced indicator
-function renderAdvancedIndicator(indicator, dateRange, gridColumns) {
-  const dimensions = getChartDimensions(gridColumns, window.innerWidth < 768);
-
-  if (indicator.id === "MISERY_INDEX") {
-    // Get the component data
+// Get summary statistics for insights
+function getInsightSummaryStats(insightId, dateRange) {
+  let data = [];
+  let latestValue = null;
+  let trend = "stable";
+  let interpretation = "";
+  
+  const insight = ECONOMIC_INSIGHTS[insightId];
+  
+  if (insightId === "MISERY_INDEX") {
     const unemploymentData = INDICATORS_FLAT.filter((item) => item.Indicator === "UNRATE");
     const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
-
-    // Calculate the Misery Index with date filter
-    const miseryIndexData = calculateMiseryIndex(unemploymentData, inflationData, dateRange);
-
-    // Calculate the exponentially weighted moving average
-    const ewmaData = calculateEWMA(miseryIndexData, 0.5);
-
-    // Create the plot with both a line and an EWMA line
-    return Plot.plot({
-      title: indicator.title,
-      subtitle: indicator.description,
-      x: { grid: true, label: "Date" },
-      y: { grid: true, label: indicator.units },
-      width: dimensions.width,
-      height: dimensions.height,
-      margin: 40,
-      marks: [
-        // Original data line
-        Plot.lineY(miseryIndexData, {
-          x: "Date",
-          y: "Value",
-          stroke: "red",
-          strokeWidth: 1.5
-        }),
-        // EWMA line
-        Plot.lineY(ewmaData, {
-          x: "Date",
-          y: "Value",
-          stroke: "red",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        })
-      ]
-    });
-  } else if (indicator.id === "HOUSING_AFFORDABILITY") {
-    // Get the component data for both national and Alabama
-    const nationalIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSA672N");
-    const nationalPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MSPUS");
-    const alabamaIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSALA646N");
-    const alabamaPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
-
-    // Calculate Housing Affordability for both with date filter
-    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
-    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData, dateRange);
-
-    // Calculate the exponentially weighted moving average for both
-    const nationalEwmaData = calculateEWMA(nationalAffordabilityData, 0.65);
-    const alabamaEwmaData = calculateEWMA(alabamaAffordabilityData, 0.65);
-
-    // Get date range for subtitle
-    const allDates = [...nationalAffordabilityData, ...alabamaAffordabilityData].map((d) => d.Date);
-    const startDate = new Date(Math.min(...allDates.map((d) => d.getTime())));
-    const endDate = new Date(Math.max(...allDates.map((d) => d.getTime())));
-    const dateRange_str = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
-
-    // Create the plot with both national and Alabama data
-    return Plot.plot({
-      title: "Housing Affordability Comparison",
-      subtitle: `Comparing national and Alabama housing affordability indices. Higher values indicate more affordable housing.\n${dateRange_str}`,
-      x: {
-        grid: true,
-        label: "Date",
-        tickRotate: -45,
-        tickFormat: (d) => d.toLocaleDateString()
-      },
-      y: {
-        grid: true,
-        label: indicator.units,
-        nice: true,
-        domain: [15, 35],
-        tickFormat: (d) => d.toFixed(1)
-      },
-      width: dimensions.width,
-      height: dimensions.height,
-      margin: 60,
-      marks: [
-        // National data line
-        Plot.lineY(nationalAffordabilityData, {
-          x: "Date",
-          y: "Value",
-          stroke: "blue",
-          strokeWidth: 1.5,
-          title: (d) => `National: ${d.Value.toFixed(1)}`
-        }),
-        // National EWMA line
-        Plot.lineY(nationalEwmaData, {
-          x: "Date",
-          y: "Value",
-          stroke: "blue",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        }),
-        // National data points
-        Plot.dot(nationalAffordabilityData, {
-          x: "Date",
-          y: "Value",
-          fill: "blue",
-          r: 2,
-          title: (d) => `National: ${d.Value.toFixed(1)}\nDate: ${d.Date.toLocaleDateString()}`
-        }),
-        // Alabama data line
-        Plot.lineY(alabamaAffordabilityData, {
-          x: "Date",
-          y: "Value",
-          stroke: "purple",
-          strokeWidth: 1.5,
-          title: (d) => `Alabama: ${d.Value.toFixed(1)}`
-        }),
-        // Alabama EWMA line
-        Plot.lineY(alabamaEwmaData, {
-          x: "Date",
-          y: "Value",
-          stroke: "purple",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        }),
-        // Alabama data points
-        Plot.dot(alabamaAffordabilityData, {
-          x: "Date",
-          y: "Value",
-          fill: "purple",
-          r: 2,
-          title: (d) => `Alabama: ${d.Value.toFixed(1)}\nDate: ${d.Date.toLocaleDateString()}`
-        }),
-        // Legend
-        Plot.text(
-          [
-            { x: startDate, y: 33, text: "National", fill: "blue" },
-            { x: startDate, y: 31, text: "Alabama", fill: "purple" }
-          ],
-          {
-            x: "x",
-            y: "y",
-            text: "text",
-            fill: "fill",
-            dx: 50
-          }
-        )
-      ]
-    });
-  } else if (indicator.id === "ALABAMA_HOUSING_AFFORDABILITY") {
-    // Get the component data
-    const incomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSALA646N");
-    const priceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
-
-    // Calculate Housing Affordability with date filter
-    const affordabilityData = calculateHousingAffordability(incomeData, priceData, dateRange);
-
-    // Calculate the exponentially weighted moving average
-    const ewmaData = calculateEWMA(affordabilityData, 0.6);
-
-    // Get date range for subtitle
-    const dateRange_str =
-      affordabilityData.length > 0
-        ? `Data from ${affordabilityData[0].Date.toLocaleDateString()} to ${affordabilityData[affordabilityData.length - 1].Date.toLocaleDateString()}`
-        : "No data available";
-
-    // Create the plot with both a line and an EWMA line
-    return Plot.plot({
-      title: indicator.title,
-      subtitle: `${indicator.description}\n${dateRange_str}`,
-      x: {
-        grid: true,
-        label: "Date",
-        tickRotate: -45,
-        tickFormat: (d) => d.toLocaleDateString()
-      },
-      y: {
-        grid: true,
-        label: indicator.units,
-        nice: true
-      },
-      width: dimensions.width,
-      height: dimensions.height,
-      margin: 60,
-      marks: [
-        // Original data line
-        Plot.lineY(affordabilityData, {
-          x: "Date",
-          y: "Value",
-          stroke: "purple",
-          strokeWidth: 1.5
-        }),
-        // EWMA line
-        Plot.lineY(ewmaData, {
-          x: "Date",
-          y: "Value",
-          stroke: "purple",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        }),
-        // Data points
-        Plot.dot(affordabilityData, {
-          x: "Date",
-          y: "Value",
-          fill: "purple",
-          r: 3
-        })
-      ]
-    });
-  } else if (indicator.id === "REAL_INTEREST_RATE") {
-    // Get the component data
+    data = calculateMiseryIndex(unemploymentData, inflationData, dateRange);
+  } else if (insightId === "REAL_INTEREST_RATE") {
     const interestData = INDICATORS_FLAT.filter((item) => item.Indicator === "FEDFUNDS");
     const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
-
-    // Calculate Real Interest Rate with date filter
-    const realInterestData = calculateRealInterestRate(interestData, inflationData, dateRange);
-
-    // Calculate the exponentially weighted moving average
-    const ewmaData = calculateEWMA(realInterestData, 0.2);
-
-    // Create the plot with both a line and an EWMA line
-    return Plot.plot({
-      title: indicator.title,
-      subtitle: indicator.description,
-      x: { grid: true, label: "Date" },
-      y: { grid: true, label: indicator.units },
-      width: dimensions.width,
-      height: dimensions.height,
-      margin: 40,
-      marks: [
-        // Original data line
-        Plot.lineY(realInterestData, {
-          x: "Date",
-          y: "Value",
-          stroke: "green",
-          strokeWidth: 1.5
-        }),
-        // EWMA line
-        Plot.lineY(ewmaData, {
-          x: "Date",
-          y: "Value",
-          stroke: "green",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        })
-      ]
-    });
-  } else if (indicator.id === "HOUSING_DIVERGENCE") {
-    // Get the component data for both national and Alabama
+    data = calculateRealInterestRate(interestData, inflationData, dateRange);
+  } else if (insightId === "HOUSING_AFFORDABILITY") {
     const nationalIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSA672N");
     const nationalPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MSPUS");
-    const alabamaIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSALA646N");
-    const alabamaPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
-
-    // Calculate Housing Affordability for both with date filter
-    const nationalAffordabilityData = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
-    const alabamaAffordabilityData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData, dateRange);
-
-    // Calculate divergence
-    const commonDates = nationalAffordabilityData
-      .map((d) => d.Date.getTime())
-      .filter((date) => alabamaAffordabilityData.some((d) => d.Date.getTime() === date));
-
-    const divergenceData = commonDates.map((date) => {
-      const national = nationalAffordabilityData.find((d) => d.Date.getTime() === date);
-      const alabama = alabamaAffordabilityData.find((d) => d.Date.getTime() === date);
-      return {
-        Date: new Date(date),
-        Value: alabama.Value - national.Value,
-        NationalValue: national.Value,
-        AlabamaValue: alabama.Value
-      };
-    });
-
-    // Calculate moving average for smoother trend
-    const ewmaDivergence = calculateEWMA(divergenceData, 0.65);
-
-    // Get date range for subtitle
-    const startDate = new Date(Math.min(...divergenceData.map((d) => d.Date.getTime())));
-    const endDate = new Date(Math.max(...divergenceData.map((d) => d.Date.getTime())));
-    const dateRange_str = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
-
-    // Create the divergence plot
-    return Plot.plot({
-      title: "Housing Affordability Divergence: Alabama vs National",
-      subtitle: `Shows how Alabama's housing affordability differs from the national average.\nPositive values mean Alabama is more affordable. ${dateRange_str}`,
-      x: {
-        grid: true,
-        label: "Date",
-        tickRotate: -45,
-        tickFormat: (d) => d.toLocaleDateString()
-      },
-      y: {
-        grid: true,
-        label: "Difference in Affordability Index",
-        domain: [-5, 5],
-        tickFormat: (d) => d.toFixed(1)
-      },
-      width: dimensions.width,
-      height: dimensions.height,
-      margin: 60,
-      marks: [
-        // Zero line
-        Plot.ruleY([0], {
-          stroke: "#ccc",
-          strokeWidth: 1
-        }),
-        // Divergence area
-        Plot.areaY(divergenceData, {
-          x: "Date",
-          y: "Value",
-          fill: (d) => (d.Value >= 0 ? "rgba(0, 128, 0, 0.1)" : "rgba(255, 0, 0, 0.1)")
-        }),
-        // Divergence line
-        Plot.lineY(divergenceData, {
-          x: "Date",
-          y: "Value",
-          stroke: (d) => (d.Value >= 0 ? "green" : "red"),
-          strokeWidth: 1.5,
-          title: (d) =>
-            `Difference: ${d.Value.toFixed(1)}\nAlabama: ${d.AlabamaValue.toFixed(1)}\nNational: ${d.NationalValue.toFixed(1)}`
-        }),
-        // Moving average line
-        Plot.lineY(ewmaDivergence, {
-          x: "Date",
-          y: "Value",
-          stroke: "black",
-          strokeWidth: 2,
-          strokeDasharray: "5,5"
-        }),
-        // Data points
-        Plot.dot(divergenceData, {
-          x: "Date",
-          y: "Value",
-          fill: (d) => (d.Value >= 0 ? "green" : "red"),
-          r: 2,
-          title: (d) => `Difference: ${d.Value.toFixed(1)}\nDate: ${d.Date.toLocaleDateString()}`
-        })
-      ]
-    });
+    data = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
   }
+  
+  if (data.length > 0) {
+    const latest = data[data.length - 1];
+    const previous = data.length > 1 ? data[data.length - 2] : null;
+    latestValue = latest.Value;
+    
+    if (previous) {
+      const change = latest.Value - previous.Value;
+      trend = Math.abs(change) < 0.1 ? "stable" : (change > 0 ? "increasing" : "decreasing");
+    }
+    
+    // Generate interpretation based on insight type and value
+    if (insightId === "MISERY_INDEX") {
+      if (latestValue < 8) interpretation = insight.interpretation.low;
+      else if (latestValue < 15) interpretation = insight.interpretation.medium;
+      else interpretation = insight.interpretation.high;
+    } else if (insightId === "REAL_INTEREST_RATE") {
+      if (latestValue > 1) interpretation = insight.interpretation.positive;
+      else if (latestValue < -1) interpretation = insight.interpretation.negative;
+      else interpretation = insight.interpretation.neutral;
+    } else if (insightId === "HOUSING_AFFORDABILITY") {
+      if (latestValue > 25) interpretation = insight.interpretation.high;
+      else if (latestValue > 20) interpretation = insight.interpretation.medium;
+      else interpretation = insight.interpretation.low;
+    }
+  }
+  
+  return {
+    id: insightId,
+    title: insight.title,
+    subtitle: insight.subtitle,
+    latest: latestValue,
+    units: insight.units,
+    trend: trend,
+    interpretation: interpretation,
+    date: data.length > 0 ? data[data.length - 1].Date : null
+  };
+}
 
-  // Add more advanced indicators here as needed
-  return null;
+function renderInsightSummaryCard(stat) {
+  const trendIcon = stat.trend === "increasing" ? "📈" : stat.trend === "decreasing" ? "📉" : "➡️";
+  const trendColor = stat.trend === "increasing" ? "#e74c3c" : stat.trend === "decreasing" ? "#27ae60" : "#95a5a6";
+  
+  // Special handling for some indicators where decreasing is better
+  const isGoodTrend = (stat.id === "MISERY_INDEX" && stat.trend === "decreasing") ||
+                     (stat.id === "REAL_INTEREST_RATE" && stat.trend === "increasing") ||
+                     (stat.id === "HOUSING_AFFORDABILITY" && stat.trend === "increasing");
+  
+  const finalTrendColor = isGoodTrend ? "#27ae60" : 
+                         (stat.trend === "stable" ? "#95a5a6" : "#e74c3c");
+  
+  return html`
+    <div class="insight-summary-card">
+      <div class="insight-header">
+        <div class="insight-title">
+          <h4>${stat.title}</h4>
+          <p class="insight-subtitle">${stat.subtitle}</p>
+        </div>
+        <span class="insight-trend-icon">${trendIcon}</span>
+      </div>
+      <div class="insight-value">
+        ${typeof stat.latest === 'number' ? stat.latest.toFixed(1) : 'N/A'}
+        <span class="insight-units">${stat.units}</span>
+      </div>
+      <div class="insight-trend" style="color: ${finalTrendColor}">
+        ${stat.trend} trend
+      </div>
+      <div class="insight-interpretation">
+        ${stat.interpretation}
+      </div>
+      ${stat.date ? html`<div class="insight-date">
+        ${stat.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+      </div>` : ''}
+    </div>
+  `;
 }
 ```
 
 ```js
-// Create the date filter control for advanced indicators
-const advancedDateFilterControl = createDateFilter(
-  INDICATORS_FLAT,
-  new Date(new Date().getFullYear() - 9, 0, 1),
-  new Date()
-);
-```
+// Enhanced chart rendering with better styling
+function renderInsightChart(insightId, dateRange, gridColumns) {
+  const insight = ECONOMIC_INSIGHTS[insightId];
+  const dimensions = getChartDimensions(gridColumns, window.innerWidth < 768);
+  const categoryData = INSIGHT_CATEGORIES[insight.category];
+  
+  if (insightId === "MISERY_INDEX") {
+    const unemploymentData = INDICATORS_FLAT.filter((item) => item.Indicator === "UNRATE");
+    const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
+    const miseryData = calculateMiseryIndex(unemploymentData, inflationData, dateRange);
+    const smoothedData = calculateEWMA(miseryData, 0.4);
 
-```js
-// Create the grid controls (no group toggle for advanced indicators)
-const advancedGridControlsElement = createGridControls(1, false);
-```
+    return Plot.plot({
+      title: insight.title,
+      subtitle: "Higher values indicate greater economic hardship",
+      x: { grid: true, label: "Date" },
+      y: { grid: true, label: insight.units },
+      width: dimensions.width,
+      height: dimensions.height,
+      margin: 40,
+      marks: [
+        Plot.lineY(miseryData, {
+          x: "Date",
+          y: "Value", 
+          stroke: categoryData.color,
+          strokeWidth: 1.5,
+          strokeOpacity: 0.7
+        }),
+        Plot.lineY(smoothedData, {
+          x: "Date",
+          y: "Value",
+          stroke: categoryData.color,
+          strokeWidth: 3
+        }),
+        Plot.dot(miseryData.filter((d, i) => i % 3 === 0), {
+          x: "Date",
+          y: "Value",
+          fill: categoryData.color,
+          r: 3,
+          tip: true
+        })
+      ]
+    });
+  } else if (insightId === "REAL_INTEREST_RATE") {
+    const interestData = INDICATORS_FLAT.filter((item) => item.Indicator === "FEDFUNDS");
+    const inflationData = INDICATORS_FLAT.filter((item) => item.Indicator === "CPIAUCSL");
+    const realRateData = calculateRealInterestRate(interestData, inflationData, dateRange);
+    const smoothedData = calculateEWMA(realRateData, 0.3);
 
-```js
-// Initial advanced dashboard content
-const initialAdvancedDashboardContent = html`<div class="grid grid-cols-1">
-  ${Object.values(ADVANCED_INDICATORS).map(
-    (indicator) => html`
-      <div class="card">
-        <div class="card-chart">
-          ${renderAdvancedIndicator(
-            indicator,
-            {
-              startDate: new Date(new Date().getFullYear() - 9, 0, 1),
-              endDate: new Date()
-            },
-            1
+    return Plot.plot({
+      title: insight.title,
+      subtitle: "Positive values benefit savers, negative values favor borrowers",
+      x: { grid: true, label: "Date" },
+      y: { grid: true, label: insight.units },
+      width: dimensions.width,
+      height: dimensions.height,
+      margin: 40,
+      marks: [
+        Plot.ruleY([0], { stroke: "#666", strokeDasharray: "3,3" }),
+        Plot.areaY(realRateData, {
+          x: "Date",
+          y: "Value",
+          fill: (d) => d.Value >= 0 ? "rgba(39, 174, 96, 0.2)" : "rgba(231, 76, 60, 0.2)"
+        }),
+        Plot.lineY(realRateData, {
+          x: "Date",
+          y: "Value",
+          stroke: categoryData.color,
+          strokeWidth: 1.5,
+          strokeOpacity: 0.7
+        }),
+        Plot.lineY(smoothedData, {
+          x: "Date",
+          y: "Value",
+          stroke: categoryData.color,
+          strokeWidth: 3
+        })
+      ]
+    });
+  } else if (insightId === "HOUSING_AFFORDABILITY") {
+    const nationalIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSA672N");
+    const nationalPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MSPUS");
+    const alabamaIncomeData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEHOINUSALA646N");
+    const alabamaPriceData = INDICATORS_FLAT.filter((item) => item.Indicator === "MEDLISPRIAL");
+    
+    const nationalData = calculateHousingAffordability(nationalIncomeData, nationalPriceData, dateRange);
+    const alabamaData = calculateHousingAffordability(alabamaIncomeData, alabamaPriceData, dateRange);
+
+    return Plot.plot({
+      title: insight.title,
+      subtitle: "Higher values indicate more affordable housing relative to income",
+      x: { grid: true, label: "Date" },
+      y: { grid: true, label: insight.units },
+      width: dimensions.width,
+      height: dimensions.height,
+      margin: 40,
+      marks: [
+        Plot.lineY(nationalData, {
+          x: "Date",
+          y: "Value",
+          stroke: "#3498db",
+          strokeWidth: 2.5,
+          tip: true
+        }),
+        Plot.lineY(alabamaData, {
+          x: "Date",
+          y: "Value",
+          stroke: "#e74c3c",
+          strokeWidth: 2.5,
+          tip: true
+        }),
+        Plot.text([{x: nationalData[0]?.Date, y: 32, text: "National", fill: "#3498db"}], {
+          x: "x", y: "y", text: "text", fill: "fill", dx: 20
+        }),
+        Plot.text([{x: alabamaData[0]?.Date, y: 30, text: "Alabama", fill: "#e74c3c"}], {
+          x: "x", y: "y", text: "text", fill: "fill", dx: 20
+        })
+      ]
+    });
+  }
+  
+  return html`<div>Chart for ${insightId} not implemented yet</div>`;
+}
+
+function renderInsightSection(categoryName, categoryData, dateRange, gridSettings) {
+  const gridClass = getGridClass(gridSettings.columns);
+  const summaryStats = categoryData.insights.map(insightId => getInsightSummaryStats(insightId, dateRange));
+  
+  return html`
+    <div class="insight-section">
+      <div class="insight-section-header">
+        <h2>${categoryData.icon} ${categoryName}</h2>
+        <p class="section-description">${categoryData.description}</p>
+        <div class="insight-summary-stats">
+          ${summaryStats.map(stat => renderInsightSummaryCard(stat))}
+        </div>
+      </div>
+      <div class="insight-section-charts">
+        <div class="grid ${gridClass}">
+          ${categoryData.insights.map(
+            (insightId) => html`
+              <div class="insight-chart-container">
+                ${renderInsightChart(insightId, dateRange, gridSettings.columns)}
+              </div>
+            `
           )}
         </div>
       </div>
-    `
-  )}
-</div>`;
+    </div>
+  `;
+}
 ```
 
-## Advanced Economic Indicators
+```js
+// State management for insights dashboard
+let currentDateRange = {
+  startDate: new Date(new Date().getFullYear() - 5, 0, 1),
+  endDate: new Date()
+};
+let currentGridSettings = { columns: 1, grouped: true };
 
-<div class="dashboard-controls">
-  <div class="controls-row">
-    ${advancedDateFilterControl}
-    ${advancedGridControlsElement}
+// Create dashboard content container
+const insightsDashboardContainer = html`<div class="insights-dashboard-container"></div>`;
+
+// Function to update insights dashboard
+function updateInsightsDashboard() {
+  const content = html`<div class="insights-dashboard-sections">
+    ${Object.entries(INSIGHT_CATEGORIES).map(([categoryName, categoryData]) => 
+      renderInsightSection(categoryName, categoryData, currentDateRange, currentGridSettings)
+    )}
+  </div>`;
+
+  insightsDashboardContainer.innerHTML = "";
+  insightsDashboardContainer.appendChild(content);
+}
+
+// Create controls
+const insightsDateFilterControl = createDateFilter(
+  INDICATORS_FLAT,
+  currentDateRange.startDate,
+  currentDateRange.endDate,
+  (newDateRange) => {
+    currentDateRange = newDateRange;
+    updateInsightsDashboard();
+  }
+);
+
+const insightsGridControlsElement = createGridControls(currentGridSettings.columns, false, (newGridSettings) => {
+  currentGridSettings = newGridSettings;
+  updateInsightsDashboard();
+});
+
+// Initial dashboard content
+updateInsightsDashboard();
+```
+
+# Economic Insights
+
+Explore advanced economic analysis through composite indicators that combine multiple data sources to reveal deeper insights about economic conditions, housing markets, and financial trends.
+
+<div class="insights-intro">
+  <div class="intro-content">
+    <h1>📊 Economic Insights Dashboard</h1>
+    <p>Understanding complex economic relationships through advanced indicators that combine multiple data sources. These insights help reveal the bigger picture of economic conditions affecting everyday Americans.</p>
+  </div>
+  <div class="insights-overview">
+    <div class="overview-stat">
+      <span class="stat-number">${Object.keys(ECONOMIC_INSIGHTS).length}</span>
+      <span class="stat-label">Composite Indicators</span>
+    </div>
+    <div class="overview-stat">
+      <span class="stat-number">${Object.keys(INSIGHT_CATEGORIES).length}</span>
+      <span class="stat-label">Analysis Categories</span>
+    </div>
   </div>
 </div>
 
-<div class="advanced-dashboard-content">
-  ${initialAdvancedDashboardContent}
+## Dashboard Controls
+
+<div class="dashboard-controls">
+  <div class="controls-row">
+    ${INDICATORS_FLAT.length > 0 ? insightsDateFilterControl : html`<div>Loading date filter...</div>`}
+    ${insightsGridControlsElement}
+  </div>
+</div>
+
+## Economic Analysis
+
+<div class="insights-dashboard-content">
+  ${INDICATORS_FLAT.length > 0 ? insightsDashboardContainer : html`<div>Loading insights...</div>`}
 </div>
 
 <style>
+/* Insights-specific styling */
+.insights-intro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.intro-content h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.intro-content p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.insights-overview {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 120px;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+/* Insight Sections */
+.insights-dashboard-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.insight-section {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.insight-section-header {
+  background: var(--theme-background-secondary);
+  padding: 2rem;
+  border-bottom: 1px solid var(--theme-foreground-faint);
+}
+
+.insight-section-header h2 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-foreground-focus);
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.section-description {
+  margin: 0 0 2rem 0;
+  color: var(--theme-foreground-muted);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.insight-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.insight-summary-card {
+  background: var(--theme-background-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--theme-foreground-faint);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.insight-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.insight-title h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  color: var(--theme-foreground-focus);
+  font-weight: 600;
+}
+
+.insight-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--theme-foreground-muted);
+  line-height: 1.3;
+}
+
+.insight-trend-icon {
+  font-size: 1.4rem;
+}
+
+.insight-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--theme-foreground-focus);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.insight-units {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--theme-foreground-muted);
+  margin-left: 0.25rem;
+}
+
+.insight-trend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+}
+
+.insight-interpretation {
+  font-size: 0.9rem;
+  color: var(--theme-foreground-muted);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.insight-date {
+  font-size: 0.8rem;
+  color: var(--theme-foreground-faint);
+}
+
+.insight-section-charts {
+  background: var(--theme-background-primary);
+  padding: 2rem;
+}
+
+.insight-chart-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--theme-background-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 /* Dashboard Controls */
 .dashboard-controls {
   background: var(--theme-background-secondary);
@@ -780,23 +885,6 @@ const initialAdvancedDashboardContent = html`<div class="grid grid-cols-1">
   border-color: var(--theme-primary);
 }
 
-.grid-controls-toggle {
-  margin-top: 0.5rem;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: var(--theme-foreground);
-}
-
-.toggle-label input[type="checkbox"] {
-  accent-color: var(--theme-primary);
-}
-
 /* Grid System */
 .grid {
   display: grid;
@@ -812,33 +900,32 @@ const initialAdvancedDashboardContent = html`<div class="grid grid-cols-1">
   grid-template-columns: repeat(2, 1fr);
 }
 
-.grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.grid-cols-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* Responsive Grid */
-@media (max-width: 1200px) {
-  .grid-cols-4 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 1024px) {
-  .grid-cols-3,
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .grid-cols-2,
-  .grid-cols-3,
-  .grid-cols-4 {
+  .insights-intro {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+  
+  .intro-content h1 {
+    font-size: 2rem;
+  }
+  
+  .insights-overview {
+    justify-content: center;
+  }
+  
+  .insight-summary-stats {
     grid-template-columns: 1fr;
+  }
+  
+  .insight-section-header {
+    padding: 1.5rem;
+  }
+  
+  .insight-section-charts {
+    padding: 1.5rem;
   }
   
   .controls-row {
@@ -851,118 +938,9 @@ const initialAdvancedDashboardContent = html`<div class="grid grid-cols-1">
   }
 }
 
-.card {
-  background: var(--theme-background-secondary);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05),
-              0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08),
-              0 2px 4px rgba(0, 0, 0, 0.12);
-}
-
-.card-header h3 {
-  margin: 0 0 1.5rem 0;
-  color: var(--theme-foreground-focus);
-  font-size: 1.4rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.card-header p {
-  margin: 0 0 1.5rem 0;
-  color: var(--theme-foreground-muted);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.card-chart {
-  margin: 1rem 0;
-  padding: 1rem;
-  background: var(--theme-background-primary);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.dashboard-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  margin: 2rem 0;
-  padding: 0 1rem;
-}
-
-.error-message {
-  background: var(--theme-background-secondary);
-  border: 2px solid #ff6b6b;
-  border-radius: 8px;
-  padding: 2rem;
-  margin: 2rem 0;
-  text-align: center;
-}
-
-.error-message h3 {
-  color: #ff6b6b;
-  margin: 0 0 1rem 0;
-}
-
-section {
-  margin-bottom: 4rem;
-}
-
-section h2 {
-  margin-bottom: 2rem;
-  color: var(--theme-foreground-focus);
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  position: relative;
-  padding-bottom: 0.5rem;
-}
-
-section h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 4px;
-  background: var(--theme-primary);
-  border-radius: 2px;
-}
-
-/* Add a subtle gradient background to the page */
-body {
-  background: linear-gradient(
-    to bottom,
-    var(--theme-background-primary),
-    var(--theme-background-secondary)
-  );
-  min-height: 100vh;
-}
-
-/* Make the plots more visually appealing */
-svg {
-  border-radius: 8px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .card {
-    padding: 1.5rem;
-  }
-  
-  .card-header h3 {
-    font-size: 1.2rem;
-  }
-  
-  section h2 {
-    font-size: 1.6rem;
+@media (max-width: 1024px) {
+  .insight-summary-stats {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
 </style>
