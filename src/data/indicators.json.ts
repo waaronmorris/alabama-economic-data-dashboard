@@ -149,6 +149,13 @@ const INDICATORS: Record<string, Indicator> = {
     description: "Monthly, Seasonally Adjusted",
     units: "Dollars",
     group: "Alabama"
+  },
+  ALLF: {
+    id: "ALLF",
+    title: "Civilian Labor Force - Alabama",
+    description: "Monthly, Seasonally Adjusted",
+    units: "Thousands of Persons",
+    group: "Alabama"
   }
 };
 

@@ -107,7 +107,7 @@ function renderAlabamaOverview(dateRange, gridSettings) {
     <div class="card">
       <div class="card-header">
         <h3>🏡 Alabama Economic Indicators</h3>
-        <p class="card-subtitle">Key economic metrics tracking Alabama's economic health and performance</p>
+        <p class="card-subtitle">Comprehensive labor market data, income trends, and housing metrics tracking Alabama's economic health and performance</p>
       </div>
       <div class="grid ${gridClass}">
         ${ALABAMA_INDICATOR_IDS.map(
@@ -252,7 +252,7 @@ updateDashboard();
 
 # Alabama Economic Dashboard
 
-Explore key economic indicators specific to Alabama, including labor market metrics, income data, and housing statistics. Compare Alabama's performance to national averages and track trends over time.
+Explore key economic indicators specific to Alabama, including comprehensive labor market metrics, income data, and housing statistics. Track Alabama's civilian labor force, unemployment trends, and economic performance compared to national averages.
 
 <div class="dashboard-intro">
   <div class="intro-stats">
@@ -291,6 +291,16 @@ Explore key economic indicators specific to Alabama, including labor market metr
 <div class="dashboard-content">
   ${ALABAMA_INDICATORS.length > 0 ? comparisonContainer : html`<div>Loading comparison data...</div>`}
 </div>
+
+## Labor Force Context
+
+Understanding Alabama's labor market requires looking beyond just unemployment rates. The **Civilian Labor Force** represents the total number of people aged 16 and over who are either employed or actively seeking employment. This metric helps contextualize unemployment trends:
+
+- **Labor Force Size**: Shows the scale of Alabama's workforce and long-term participation trends
+- **Economic Capacity**: Larger labor forces indicate greater economic potential and population growth
+- **Context for Unemployment**: A 5% unemployment rate means different things when the labor force is 2.1 million vs 2.3 million people
+
+When combined with unemployment rates, labor force data reveals whether job market changes reflect economic growth, population shifts, or changing participation patterns. This comprehensive view helps policymakers and businesses make more informed decisions about Alabama's economic trajectory.
 
 <style>
 /* Inherit base styles from index.md */

@@ -65,7 +65,7 @@ import {registerFile} from "./_observablehq/stdlib.727b6db9.js";
 
 registerFile("./data/categories.json", {"name":"./data/categories.json","mimeType":"application/json","path":"./_file/data/categories.908e81be.json","lastModified":1750693423441,"size":866});
 registerFile("./data/categorySeries.json", {"name":"./data/categorySeries.json","mimeType":"application/json","path":"./_file/data/categorySeries.9ff7f733.json","lastModified":1750779131617,"size":2868});
-registerFile("./data/indicators.json", {"name":"./data/indicators.json","mimeType":"application/json","path":"./_file/data/indicators.029f559a.json","lastModified":1750780102015,"size":295323});
+registerFile("./data/indicators.json", {"name":"./data/indicators.json","mimeType":"application/json","path":"./_file/data/indicators.b47e014a.json","lastModified":1750867828498,"size":256586});
 
 define({id: "660d04eb", inputs: ["FileAttachment"], outputs: ["html","INDICATORS","CATEGORIES","CATEGORY_SERIES","createDateFilter","filterDataByDateRange","getDateRangeFromFilter","createGridControls","getGridClass","getChartDimensions","getGridSettingsFromControls"], body: async (FileAttachment) => {
 const [{html}, {createDateFilter, filterDataByDateRange, getDateRangeFromFilter}, {createGridControls, getGridClass, getChartDimensions, getGridSettingsFromControls}] = await Promise.all([import("./_npm/htl@0.3.1/119796e4.js"), import("./_import/components/dateFilter.21284dea.js"), import("./_import/components/gridControls.73dc4792.js")]);
@@ -402,7 +402,7 @@ INDICATORS_FLAT ? dashboardContainer : html`<div>Loading dashboard content...</d
   </ol>
   <div id="observablehq-search"><input type="search" placeholder="Search"></div>
   <div id="observablehq-search-results"></div>
-  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.732a8e51.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.ec411e1b.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
   <ol>
     <li class="observablehq-link observablehq-link-active"><a href="./">Home</a></li>
     <li class="observablehq-link"><a href="./alabama-dashboard">Alabama Dashboard</a></li>
@@ -990,7 +990,7 @@ svg {
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="next" href="./alabama-dashboard"><span>Alabama Dashboard</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2025-06-25T10:56:01">Jun 25, 2025</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2025-06-25T11:11:39">Jun 25, 2025</a>.</div>
 </footer>
 </div>
 </body>
